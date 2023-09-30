@@ -8,5 +8,5 @@ Year first available: 2023
 Hardware required: Graphical Processing Unit
 Software required: Windows 10, Qt 5.15
 Program language: C++, OpenGL, GLSL
-Program size: 1.25 MB (code only). 13.8MB (Code + example data)
+Program size: 1.25 MB
 Source Code Access: https://github.com/farhan-admin/GnGAnalyzer
