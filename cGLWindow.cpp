@@ -812,6 +812,16 @@ GLenum cGLWindow::glCheckError_(const char* file, int line)
         return false;
     }
     
+    void cGLWindow::setTextureWrapping(int val)
+    {
+        m_TextureWrapping = val;
+    }
+
+    void cGLWindow::setTextureFiltering(int val)
+    {
+        m_TextureFiltering = val;
+    }
+
     /// <summary>
     /// This function uploads seismic trace samples to the GPU as 2D array (GL_TEXTURE_2D_ARRAY) of textures.
     /// If successful it returns True and updates the value of trcTex to the opengl ID of the loaded data.
@@ -825,12 +835,12 @@ GLenum cGLWindow::glCheckError_(const char* file, int line)
         glBindTexture(GL_TEXTURE_2D_ARRAY, gth->m_glTextureID);
 
         // set the texture wrapping parameters
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, m_TextureWrapping);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, m_TextureWrapping);
 
         // set texture filtering parameters
         glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);//GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, m_TextureFiltering);//GL_LINEAR);
 
         const uint nSamp = gth->m_ptrParent->m_NumSamples; // Seismic samples are placed from start to end of the trace
         const uint HEIGHT = 1; 

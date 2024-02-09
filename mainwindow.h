@@ -57,6 +57,22 @@ private slots:
     void on_actionContact_Info_triggered();
     void on_actionVersion_triggered();
     void on_actionLicense_triggered();
+    void on_actionGL_REPEAT_triggered();
+    void on_actionGL_MIRRORED_REPEAT_triggered();
+    void on_actionGL_CLAMP_TO_EDGE_triggered();
+    void on_actionGL_CLAMP_TO_BORDER_triggered();
+
+    void on_actionGL_NEAREST_triggered();
+
+    void on_actionGL_LINEAR_triggered();
+
+    void on_actionGL_NEAREST_MIPMAP_NEAREST_triggered();
+
+    void on_actionGL_LINEAR_MIPMAP_NEAREST_triggered();
+
+    void on_actionGL_NEAREST_MIPMAP_LINEAR_triggered();
+
+    void on_actionGL_LINEAR_MIPMAP_LINEAR_triggered();
 
 private:
     Ui::MainWindow* ui;
@@ -68,12 +84,13 @@ private:
     bool LoadMigrated(std::shared_ptr<cSegYReadWrite> pSgyRedWrt, std::shared_ptr<cSeisData> pdt, QTreeWidgetItem* itmFileName, QTreeWidgetItem* rcvItem);
     QTreeWidgetItem* AddToTreeWidget(std::shared_ptr<cSeisData> pDt, QString& dataDesc, quint32 dataIndx);
     virtual void closeEvent(QCloseEvent* event); //https://stackoverflow.com/questions/25454648/qmainwindow-close-signal-not-emitted
-    void onDisplay3D(int m_vDataIndx);
-    bool on_FileRemove(int m_vDataIndx);
+    void on_Display3D(int m_vDataIndx);
+    bool on_RemoveDisplay3D(int m_vDataIndx);
     void onDispNormChanged(double val);
     void onFlipElevationAxis(bool state);
     bool GenerateColorMaps();
     QList<std::shared_ptr<cSeisData>> m_vData;//Stores pointers to all loaded data sets
+    QList<std::shared_ptr <cSeisGather>> m_vDispGth; // Stores pointers to currently visible Seismic Gathers/Traces
     std::shared_ptr<cGLWindow> m_GLWnd;  //3D OpenGL Window
     IndxFileSort GetCurrentIndxFileSort();
     void createTopNodeMenuActions();

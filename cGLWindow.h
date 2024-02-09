@@ -121,6 +121,8 @@ class cErrWarnInfo;
         int GetAvailTextureNum();
         bool RemoveSeisGath(std::shared_ptr<cSeisGather> gth);
         bool RemoveSeisHdr(std::shared_ptr<cSeisHdr> hdr);
+        void cGLWindow::setTextureWrapping(int val);
+        void cGLWindow::setTextureFiltering(int val);
         ~cGLWindow();
 
     private:
@@ -234,9 +236,11 @@ class cErrWarnInfo;
         GLint m_v3MnMxRtLocGthProg = -1;
         GLuint m_VaoRefGrid = 0; // VAO for the main reference grid
 
-
         std::shared_ptr<QOpenGLShaderProgram> m_progHeader = nullptr;
         std::shared_ptr<QOpenGLShaderProgram> m_progSeisGth = nullptr;
+
+        int m_TextureWrapping = GL_CLAMP_TO_EDGE;
+        int m_TextureFiltering = GL_LINEAR;
 
         int m_frame = 0;
         //bool m_redraw = true;
@@ -274,6 +278,7 @@ class cErrWarnInfo;
         /// </summary>
         /// <param name="val"></param>
         void SetGlobalMinMax(std::shared_ptr<cSeisData> sDt);
+
         void inline Update3DWindowMinEasting(qreal val)
         {
             if (val < m_minEasting)

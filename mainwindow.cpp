@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget* parent) :
         ui->setupUi(this);
         ui->mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
         ui->mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        setCentralWidget(ui->mdiArea);
         
         //SetUp TreeView Menus();
         this->ui->treeWdgtHdrs->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -77,13 +78,13 @@ void MainWindow::createTopNodeMenuActions()
     uiDisplay->setStatusTip(tr("Display in the 3D window"));
     uiDisplay->setToolTip(tr("Display in the 3D window"));
     TopNodeMenu->addAction(uiDisplay);
-    connect(uiDisplay, &QAction::triggered, this, &MainWindow::onDisplay3D);
+    connect(uiDisplay, &QAction::triggered, this, &MainWindow::on_Display3D);
 
     removeFileAct = new QAction(tr("&Remove Display"), this);
     removeFileAct->setStatusTip(tr("Remove data from the 3D window"));
     removeFileAct->setToolTip(tr("Remove data from the 3D window"));
     TopNodeMenu->addAction(removeFileAct);
-    connect(removeFileAct, &QAction::triggered, this, &MainWindow::on_FileRemove);
+    connect(removeFileAct, &QAction::triggered, this, &MainWindow::on_RemoveDisplay3D);
 
     TopNodeMenu->addSeparator();
 
@@ -227,7 +228,7 @@ IndxFileSort MainWindow::GetCurrentIndxFileSort() {
     return indx;
 }
 
-bool MainWindow::on_FileRemove(int m_vDataIndx) 
+bool MainWindow::on_RemoveDisplay3D(int m_vDataIndx) 
 {
     //Selecting the Parent node of the currently clicked Apply button
     QTreeWidgetItem* curItem = this->ui->treeWdgtHdrs->currentItem();
@@ -237,15 +238,16 @@ bool MainWindow::on_FileRemove(int m_vDataIndx)
     {
         std::shared_ptr<cSeisData> sDt = m_vData[m_vDataIndx];
 
-        for (auto gth : sDt->m_ptrChildGather)
+        for (auto &gth : sDt->m_ptrChildGather)
         {
             m_GLWnd->RemoveSeisGath(gth);
+            m_vDispGth.removeAt(m_vDispGth.indexOf(gth));
         }
 
         sDt->m_ptrChildGather.clear();
         sDt->m_ptrChildGather.squeeze();
 
-        for (auto hdr : sDt->m_ptrChildHdr)
+        for (auto &hdr : sDt->m_ptrChildHdr)
         {
             m_GLWnd->RemoveSeisHdr(hdr);
         }
@@ -381,11 +383,8 @@ void MainWindow::on_actionOpen_File_triggered()
                         break;
                     }
                 } // switch
-            }// if
-                    
-
-               
-        }
+            }// if (m_vData.size() > 0)
+        } //if (sgDlg.exec())
     }//try
 
     catch (const exception& e)
@@ -469,6 +468,7 @@ bool MainWindow::LoadMigrated(std::shared_ptr<cSegYReadWrite> pSgyRedWrt, std::s
             }
         }
     ); // QtConcurrent::run([pSgyRedWrt, pdt, itm, this]()
+
     return false;
 }
 
@@ -578,14 +578,14 @@ bool MainWindow::on_BtnApplyNorm()
     QTreeWidgetItem* curItem = this->ui->treeWdgtHdrs->currentItem();
     int m_vDataIndx = GetTopNodeIndex(curItem);
 
-    on_FileRemove(m_vDataIndx); //First delete the old data from the GLWindow
+    on_RemoveDisplay3D(m_vDataIndx); //First delete the old data from the GLWindow
 
-    onDisplay3D(m_vDataIndx);
+    on_Display3D(m_vDataIndx);
 
     return false;
 }
     
-void MainWindow::onDisplay3D(int m_vDataIndx)
+void MainWindow::on_Display3D(int m_vDataIndx)
 {
     //Selecting the Parent node of the currently clicked Apply button
     QTreeWidgetItem* curItem = this->ui->treeWdgtHdrs->currentItem();
@@ -648,8 +648,8 @@ void MainWindow::onFlipElevationAxis(bool state)
     if(state != pDt->m_flipElev) //Only calling redraw if state has actually changed
     {             
         pDt->m_flipElev = state;
-        on_FileRemove(m_vDataIndx); //First delete the old file
-        onDisplay3D(m_vDataIndx);
+        on_RemoveDisplay3D(m_vDataIndx); //First delete the old file
+        on_Display3D(m_vDataIndx);
     }
 }
 
@@ -670,7 +670,7 @@ void MainWindow::on_actionClose_Project_triggered()
     QApplication::quit();
 }
 
-void MainWindow::Display3DDownHoleMultiRcvSingleSrc(std::shared_ptr<cSeisData> pDt)
+void MainWindow::Display3DDownHoleMultiRcvSingleSrc(std::shared_ptr<cSeisData> sDt)
 {
     if (!m_GLWnd)
         CreateSubWindow();
@@ -678,39 +678,39 @@ void MainWindow::Display3DDownHoleMultiRcvSingleSrc(std::shared_ptr<cSeisData> p
     ///Load Source and Receivers
     std::shared_ptr<cSeisHdr> rcv = std::make_shared<cSeisHdr>();
 
-    pDt->m_ptrChildHdr.push_back(rcv);
+    sDt->m_ptrChildHdr.push_back(rcv);
 
-    rcv->m_VcLocXYZ = pDt->GetSrcRcvs(false);
+    rcv->m_VcLocXYZ = sDt->GetSrcRcvs(false);
     rcv->m_Color = Qt::blue;
-    rcv->m_flipElev = pDt->m_flipElev;
+    rcv->m_flipElev = sDt->m_flipElev;
 
     if (rcv->m_VcLocXYZ)
-        m_GLWnd->AddSeisHdrObj(pDt, rcv);
+        m_GLWnd->AddSeisHdrObj(sDt, rcv);
 
     std::shared_ptr<cSeisHdr> src = std::make_shared<cSeisHdr>();
 
-    pDt->m_ptrChildHdr.push_back(src);
+    sDt->m_ptrChildHdr.push_back(src);
 
-    src->m_VcLocXYZ = pDt->GetSrcRcvs(true);
+    src->m_VcLocXYZ = sDt->GetSrcRcvs(true);
     src->m_Color = Qt::red;
-    src->m_flipElev = pDt->m_flipElev;
+    src->m_flipElev = sDt->m_flipElev;
 
     if (src->m_VcLocXYZ)
-        m_GLWnd->AddSeisHdrObj(pDt, src);
+        m_GLWnd->AddSeisHdrObj(sDt, src);
 
     //Load Traces
 
     std::shared_ptr <cSeisGather> gth = std::make_shared<cSeisGather>();
 
-    pDt->m_ptrChildGather.push_back(gth); // Storing reference in the parent.
+    sDt->m_ptrChildGather.push_back(gth); // Gathers added in the sDt->m_ptrChildGather will be displayed
 
-    gth->m_ptrParent = pDt;
+    gth->m_ptrParent = sDt;
 
-    gth->m_GatherAttributes->m_flipElev = pDt->m_flipElev;
+    gth->m_GatherAttributes->m_flipElev = sDt->m_flipElev;
 
     //gth->m_GatherAttributes->m_ColorMap = m_defaultDivergingColorMap;
 
-    pDt->GetTraceGather(true, 1, gth); //true = Source Gather, false = Receiver Gather. Get the Source gather 1
+    sDt->GetTraceGather(true, 1, gth); //true = Source Gather, false = Receiver Gather. Get the Source gather 1
 
     gth->m_isTrckVert = false;
     gth->m_smplsTrckScal = QVector3D(0.7f, 0.004f, 0.0f);
@@ -726,8 +726,8 @@ void MainWindow::Display3DMigrated(std::shared_ptr<cSeisData> sDt)
     ///Load Source and Receivers
 
     std::shared_ptr<cSeisHdr> rcv = std::make_shared<cSeisHdr>();
-    sDt->m_ptrChildHdr.push_back(rcv);
 
+    sDt->m_ptrChildHdr.push_back(rcv); /// Object to store the Visible Seismic HEADERS.
     rcv->m_VcLocXYZ = sDt->GetSrcRcvs(true);
     rcv->m_flipElev = sDt->m_flipElev;
     rcv->m_Color = Qt::green;
@@ -736,7 +736,10 @@ void MainWindow::Display3DMigrated(std::shared_ptr<cSeisData> sDt)
 
     std::shared_ptr <cSeisGather> gth = std::make_shared<cSeisGather>();
 
-    sDt->m_ptrChildGather.push_back(gth); // Storing reference in the parent.
+    /// Object to store the Visible Seismic TRACES.
+    /// Depending on the trace values passed to the sDt->GetStackedData function, 
+    /// this object could be a few traces 0r the whole data
+    sDt->m_ptrChildGather.push_back(gth); 
 
     gth->m_ptrParent = sDt;
 
@@ -754,9 +757,11 @@ void MainWindow::Display3DMigrated(std::shared_ptr<cSeisData> sDt)
     gth->m_smplsTrckScal = QVector3D(0.001f, 0.7f, 0.0f);
 
 
-    sDt->GetStackedData(gth, hdrX, hdrY, hdrZ, frmTrc, toTrc); //true = Source Gather, false = Receiver Gather. Get the Source gather 1
+    sDt->GetStackedData(gth, hdrX, hdrY, hdrZ, frmTrc, toTrc);
 
     m_GLWnd->AddSeisGath(gth);
+
+    m_vDispGth.push_back(gth); // Gathers added to this list are visible
 
 }
     
@@ -819,3 +824,64 @@ void MainWindow::on_actionLicense_triggered()
 
     infDlg.exec();
 }
+
+void MainWindow::on_actionGL_REPEAT_triggered()
+{
+    m_GLWnd->setTextureWrapping(GL_REPEAT);
+    m_GLWnd->update();
+}
+
+void MainWindow::on_actionGL_MIRRORED_REPEAT_triggered()
+{
+    m_GLWnd->setTextureWrapping(GL_MIRRORED_REPEAT);
+    m_GLWnd->update();
+}
+
+void MainWindow::on_actionGL_CLAMP_TO_EDGE_triggered()
+{
+    m_GLWnd->setTextureWrapping(GL_CLAMP_TO_EDGE);
+    m_GLWnd->update();
+}
+
+void MainWindow::on_actionGL_CLAMP_TO_BORDER_triggered()
+{
+    m_GLWnd->setTextureWrapping(GL_CLAMP_TO_BORDER);
+    m_GLWnd->update();
+}
+
+void MainWindow::on_actionGL_NEAREST_triggered()
+{
+    m_GLWnd->setTextureFiltering(GL_NEAREST);
+    m_GLWnd->update();
+}
+
+void MainWindow::on_actionGL_LINEAR_triggered()
+{
+    m_GLWnd->setTextureFiltering(GL_LINEAR);
+    m_GLWnd->update();
+}
+
+void MainWindow::on_actionGL_NEAREST_MIPMAP_NEAREST_triggered()
+{
+    m_GLWnd->setTextureFiltering(GL_NEAREST_MIPMAP_NEAREST);
+    m_GLWnd->update();
+}
+
+void MainWindow::on_actionGL_LINEAR_MIPMAP_NEAREST_triggered()
+{
+    m_GLWnd->setTextureFiltering(GL_LINEAR_MIPMAP_NEAREST);
+    m_GLWnd->update();
+}
+
+void MainWindow::on_actionGL_NEAREST_MIPMAP_LINEAR_triggered()
+{
+    m_GLWnd->setTextureFiltering(GL_NEAREST_MIPMAP_LINEAR);
+    m_GLWnd->update();
+}
+
+void MainWindow::on_actionGL_LINEAR_MIPMAP_LINEAR_triggered()
+{
+    m_GLWnd->setTextureFiltering(GL_LINEAR_MIPMAP_LINEAR);
+    m_GLWnd->update();
+}
+

@@ -8,7 +8,7 @@
 #include "cerrwarninfo.h"
 
 /// <summary>
-/// Structure computes colors using doubles and returns values as unsigned intergers
+/// Structure to store, add, subtract, mulitply, divide and assign color values
 /// </summary>
 struct strctColor 
 {

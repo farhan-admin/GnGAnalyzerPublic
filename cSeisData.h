@@ -47,7 +47,8 @@
         quint64                 m_NumSamples;       // Number of samples in the traces, this is read from the Binary Header
         DataType                m_dataType;         // ZVSP, WVSP, Migrated
         
-        /// Pointers to all the gather objects
+        /// Pointers to the sub gathers - This will be useful in future for tracking multiple gathers
+        /// within each data. For example tracking slices within 3D cubes OR CSG or CRG for downhole datasets
         QVector< std::shared_ptr<cSeisGather> > m_ptrChildGather;
 
         /// Pointers to all the header objects

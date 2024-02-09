@@ -16,3 +16,5 @@ packages*
 *.opendb
 .vs/sfgui/v16/Browse.VC.db
 SampleCode.cpp
+/.vs/GnGAnalyzer_v01
+/ClassDiagram.cd

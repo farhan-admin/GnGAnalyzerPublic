@@ -16,6 +16,12 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>550</width>
+    <height>550</height>
+   </size>
+  </property>
   <property name="cursor">
    <cursorShape>ArrowCursor</cursorShape>
   </property>
@@ -26,11 +32,37 @@
    <string>GnG Analyzer v0.1</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QMdiArea" name="mdiArea"/>
-    </item>
-   </layout>
+   <widget class="QMdiArea" name="mdiArea">
+    <property name="geometry">
+     <rect>
+      <x>9</x>
+      <y>9</y>
+      <width>500</width>
+      <height>500</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>500</width>
+      <height>500</height>
+     </size>
+    </property>
+    <property name="verticalScrollBarPolicy">
+     <enum>Qt::ScrollBarAsNeeded</enum>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAsNeeded</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustIgnored</enum>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -38,7 +70,7 @@
      <x>0</x>
      <y>0</y>
      <width>1119</width>
-     <height>20</height>
+     <height>16</height>
     </rect>
    </property>
    <property name="font">
@@ -64,7 +96,35 @@
     <addaction name="actionVersion"/>
     <addaction name="actionLicense"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <widget class="QMenu" name="menuTexture_Wrapping">
+     <property name="title">
+      <string>Texture Wrapping</string>
+     </property>
+     <addaction name="actionGL_REPEAT"/>
+     <addaction name="actionGL_MIRRORED_REPEAT"/>
+     <addaction name="actionGL_CLAMP_TO_EDGE"/>
+     <addaction name="actionGL_CLAMP_TO_BORDER"/>
+    </widget>
+    <widget class="QMenu" name="menuTexture_Filtering">
+     <property name="title">
+      <string>Texture Filtering</string>
+     </property>
+     <addaction name="actionGL_NEAREST"/>
+     <addaction name="actionGL_LINEAR"/>
+     <addaction name="actionGL_NEAREST_MIPMAP_NEAREST"/>
+     <addaction name="actionGL_LINEAR_MIPMAP_NEAREST"/>
+     <addaction name="actionGL_NEAREST_MIPMAP_LINEAR"/>
+     <addaction name="actionGL_LINEAR_MIPMAP_LINEAR"/>
+    </widget>
+    <addaction name="menuTexture_Wrapping"/>
+    <addaction name="menuTexture_Filtering"/>
+   </widget>
    <addaction name="menuOpen"/>
+   <addaction name="menuSettings"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -211,16 +271,6 @@
     <string>Close Project</string>
    </property>
   </action>
-  <action name="actionDisplayStackedSurface">
-   <property name="text">
-    <string>Stacked - Surface</string>
-   </property>
-  </action>
-  <action name="actionDisplayShotGatherDonwhole">
-   <property name="text">
-    <string>Shot Gather - Donwhole </string>
-   </property>
-  </action>
   <action name="actionContact_Info">
    <property name="text">
     <string>Contact Info</string>
@@ -234,6 +284,99 @@
   <action name="actionLicense">
    <property name="text">
     <string>License</string>
+   </property>
+  </action>
+  <action name="actionGL_REPEAT">
+   <property name="text">
+    <string>GL_REPEAT</string>
+   </property>
+   <property name="toolTip">
+    <string>Repeating pattern is formed using the texture</string>
+   </property>
+  </action>
+  <action name="actionGL_MIRRORED_REPEAT">
+   <property name="text">
+    <string>GL_MIRRORED_REPEAT</string>
+   </property>
+   <property name="toolTip">
+    <string>Texture will be repeated and be mirrored for odd integer coordinate</string>
+   </property>
+  </action>
+  <action name="actionGL_CLAMP_TO_EDGE">
+   <property name="text">
+    <string>GL_CLAMP_TO_EDGE</string>
+   </property>
+   <property name="toolTip">
+    <string>Coordinate will be clamped between 0 and 1</string>
+   </property>
+  </action>
+  <action name="actionGL_CLAMP_TO_BORDER">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>GL_CLAMP_TO_BORDER</string>
+   </property>
+   <property name="toolTip">
+    <string>Coordinates that fall outside the range will be given speciified border color</string>
+   </property>
+  </action>
+  <action name="actionDisplayShotGatherDonwhole">
+   <property name="text">
+    <string>Shot Gather - Donwhole </string>
+   </property>
+  </action>
+  <action name="actionDisplayStackedSurface">
+   <property name="text">
+    <string>Stacked - Surface</string>
+   </property>
+  </action>
+  <action name="actionGL_NEAREST">
+   <property name="text">
+    <string>GL_NEAREST</string>
+   </property>
+   <property name="toolTip">
+    <string>Returns the pixel that is closest to the coordinates</string>
+   </property>
+  </action>
+  <action name="actionGL_LINEAR">
+   <property name="text">
+    <string>GL_LINEAR</string>
+   </property>
+   <property name="toolTip">
+    <string>Returns the weighted average of the 4 pixels surrounding the given coordinates</string>
+   </property>
+  </action>
+  <action name="actionGL_NEAREST_MIPMAP_NEAREST">
+   <property name="text">
+    <string>GL_NEAREST_MIPMAP_NEAREST</string>
+   </property>
+   <property name="toolTip">
+    <string>Sample from mipmaps instead</string>
+   </property>
+  </action>
+  <action name="actionGL_LINEAR_MIPMAP_NEAREST">
+   <property name="text">
+    <string>GL_LINEAR_MIPMAP_NEAREST</string>
+   </property>
+   <property name="toolTip">
+    <string>Sample from mipmaps instead</string>
+   </property>
+  </action>
+  <action name="actionGL_NEAREST_MIPMAP_LINEAR">
+   <property name="text">
+    <string>GL_NEAREST_MIPMAP_LINEAR</string>
+   </property>
+   <property name="toolTip">
+    <string>Sample from mipmaps instead</string>
+   </property>
+  </action>
+  <action name="actionGL_LINEAR_MIPMAP_LINEAR">
+   <property name="text">
+    <string>GL_LINEAR_MIPMAP_LINEAR</string>
+   </property>
+   <property name="toolTip">
+    <string>Sample from mipmaps instead</string>
    </property>
   </action>
  </widget>
