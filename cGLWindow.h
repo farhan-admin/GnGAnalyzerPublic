@@ -123,6 +123,7 @@ class cErrWarnInfo;
         bool RemoveSeisHdr(std::shared_ptr<cSeisHdr> hdr);
         void cGLWindow::setTextureWrapping(int val);
         void cGLWindow::setTextureFiltering(int val);
+
         ~cGLWindow();
 
     private:
@@ -239,8 +240,8 @@ class cErrWarnInfo;
         std::shared_ptr<QOpenGLShaderProgram> m_progHeader = nullptr;
         std::shared_ptr<QOpenGLShaderProgram> m_progSeisGth = nullptr;
 
-        int m_TextureWrapping = GL_CLAMP_TO_EDGE;
-        int m_TextureFiltering = GL_LINEAR;
+        int m_glTextureWrapping = GL_CLAMP_TO_EDGE;
+        int m_glTextureFiltering = GL_LINEAR;
 
         int m_frame = 0;
         //bool m_redraw = true;

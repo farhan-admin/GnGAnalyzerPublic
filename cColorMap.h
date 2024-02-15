@@ -155,14 +155,14 @@ public:
             if ( (m_numColrs % 2) != 0 )
                 ++m_numColrs;
 
-            m_vecUByteColrMap.reserve(m_numColrs * 4); // 4 color components, RGBA
+            m_vecUByteDivergingColrMap.reserve(m_numColrs * 4); // 4 color components, RGBA
 
             float halfSpctrm = m_numColrs / 2;
 
             /// For Negative Half of the Color Map
-            float deltaR = std::round( ( m_ZeroColr.m_red - m_MaxNegColr.m_red) / halfSpctrm );
-            float deltaG = std::round( ( m_ZeroColr.m_green - m_MaxNegColr.m_green) / halfSpctrm );
-            float deltaB = std::round( ( m_ZeroColr.m_blue - m_MaxNegColr.m_blue) / halfSpctrm );
+            float deltaR =  ( m_ZeroColr.m_red - m_MaxNegColr.m_red) / halfSpctrm ;
+            float deltaG =  ( m_ZeroColr.m_green - m_MaxNegColr.m_green) / halfSpctrm ;
+            float deltaB =  ( m_ZeroColr.m_blue - m_MaxNegColr.m_blue) / halfSpctrm ;
 
             unsigned char  r = ( m_MaxNegColr.m_red);
             unsigned char  g = ( m_MaxNegColr.m_green);
@@ -170,19 +170,19 @@ public:
                 
             for (uint i = 0; i < m_numColrs/2; ++i)
             {
-                m_vecUByteColrMap.push_back(r);
-                m_vecUByteColrMap.push_back(g);
-                m_vecUByteColrMap.push_back(b);
-                m_vecUByteColrMap.push_back(ALPHA); //for alpha channel
-                r = r + deltaR;
-                g = g + deltaG;
-                b = b + deltaB;
+                m_vecUByteDivergingColrMap.push_back(r);
+                m_vecUByteDivergingColrMap.push_back(g);
+                m_vecUByteDivergingColrMap.push_back(b);
+                m_vecUByteDivergingColrMap.push_back(ALPHA); //for alpha channel
+                r = std::round(r + deltaR);
+                g = std::round(g + deltaG);
+                b = std::round(b + deltaB);
             }
 
             /// For Positive Half of the Color Map
-            deltaR = std::round( m_MaxPosColr.m_red   - m_ZeroColr.m_red  ) / halfSpctrm;
-            deltaG = std::round( m_MaxPosColr.m_green - m_ZeroColr.m_green) / halfSpctrm;
-            deltaB = std::round( m_MaxPosColr.m_blue  - m_ZeroColr.m_blue ) / halfSpctrm;
+            deltaR = ( m_MaxPosColr.m_red   - m_ZeroColr.m_red  ) / halfSpctrm;
+            deltaG = ( m_MaxPosColr.m_green - m_ZeroColr.m_green) / halfSpctrm;
+            deltaB = ( m_MaxPosColr.m_blue  - m_ZeroColr.m_blue ) / halfSpctrm;
 
             r = m_ZeroColr.m_red;
             g = m_ZeroColr.m_green;
@@ -190,21 +190,20 @@ public:
                 
             for (uint i = 0; i < m_numColrs/2; ++i)
             {
-                m_vecUByteColrMap.push_back(r);
-                m_vecUByteColrMap.push_back(g);
-                m_vecUByteColrMap.push_back(b);
-                m_vecUByteColrMap.push_back(ALPHA); //for alpha channel
-                r = r + deltaR;
-                g = g + deltaG;
-                b = b + deltaB;
+                m_vecUByteDivergingColrMap.push_back(r);
+                m_vecUByteDivergingColrMap.push_back(g);
+                m_vecUByteDivergingColrMap.push_back(b);
+                m_vecUByteDivergingColrMap.push_back(ALPHA); //for alpha channel
+                r = std::round( r + deltaR );
+                g = std::round( g + deltaG );
+                b = std::round( b + deltaB );
             }
 
             m_isColorMapInit = true;
             m_isDivrgColrMap = true;
 
             return true;
- 
-        }
+         }
 
         else
         {
@@ -231,18 +230,18 @@ public:
               if ((m_numColrs % 2) != 0)
                 ++m_numColrs;
 
-            m_vecUByteColrMap.reserve(m_numColrs * 4); // 4 color components, RGBA
+            m_vecUByteLinearColrMap.reserve(m_numColrs * 4); // 4 color components, RGBA
 
             float diff = 0.0;
 
             diff = m_MaxPosColr.m_red - m_MaxNegColr.m_red;
-            float deltaR = std::round( diff / m_numColrs);
+            float deltaR = diff / m_numColrs;
 
             diff = m_MaxPosColr.m_green - m_MaxNegColr.m_green;
-            float deltaG = std::round( diff / m_numColrs);
+            float deltaG = diff / m_numColrs;
 
             diff = m_MaxPosColr.m_blue - m_MaxNegColr.m_blue;
-            float deltaB = std::round( diff/ m_numColrs);
+            float deltaB = diff/ m_numColrs;
 
             unsigned char  r = (m_MaxNegColr.m_red);
             unsigned char  g = (m_MaxNegColr.m_green);
@@ -250,18 +249,24 @@ public:
 
             for (uint i = 0; i < m_numColrs; ++i)
             {
-                m_vecUByteColrMap.push_back(r);
-                m_vecUByteColrMap.push_back(g);
-                m_vecUByteColrMap.push_back(b);
-                m_vecUByteColrMap.push_back(ALPHA); //for alpha channel
-                r = r + deltaR;
-                g = g + deltaG;
-                b = b + deltaB;
+                m_vecUByteLinearColrMap.push_back(r);
+                m_vecUByteLinearColrMap.push_back(g);
+                m_vecUByteLinearColrMap.push_back(b);
+                m_vecUByteLinearColrMap.push_back(ALPHA); //for alpha channel
+                r = std::round(std::abs( r + deltaR));
+                g = std::round(std::abs( g + deltaG));
+                b = std::round(std::abs( b + deltaB));
             }
 
             
             m_isColorMapInit = true;
             m_isDivrgColrMap = false;
+
+            //QString str;
+            //for (int i = 0; i < m_vecUByteLinearColrMap.size() - 4; i += 4) {
+            //    str = QString::number(m_vecUByteLinearColrMap[i]) + "," + QString::number(m_vecUByteLinearColrMap[i + 1]) + "," + QString::number(m_vecUByteLinearColrMap[i + 2]) + "," + QString::number(m_vecUByteLinearColrMap[i + 3]);
+            //    cErrWarnInfo::EWI(ewiINFOR, str);
+            //}
 
             return true;
 
@@ -280,6 +285,14 @@ public:
     /// 
     std::shared_ptr<QLinearGradient> GetColorBar()
     {
+        QVector<unsigned char>* ptrColrMap = 0;
+
+        if (m_isDivrgColrMap)
+            ptrColrMap = &m_vecUByteDivergingColrMap;
+        else
+            ptrColrMap = &m_vecUByteLinearColrMap;
+
+        
         if (m_isColorMapInit)
         {
             std::shared_ptr<QLinearGradient> gradient = std::make_shared<QLinearGradient>(0, 0, m_numColrs, 0);
@@ -287,9 +300,9 @@ public:
             QGradientStops stops;
             qreal pos = 0.0;
 
-            for (int i = 0; (i + 4) <= m_vecUByteColrMap.size(); i += 4 )
+            for (int i = 0; (i + 4) <= ptrColrMap->size(); i += 4 )
             {
-                stops << QGradientStop( (pos)/m_numColrs , qRgba(m_vecUByteColrMap[i], m_vecUByteColrMap[i+1], m_vecUByteColrMap[i+2], m_vecUByteColrMap[i+3]) );
+                stops << QGradientStop( (pos)/m_numColrs , qRgba(ptrColrMap->at(i), ptrColrMap->at(i + 1), ptrColrMap->at(i + 2), ptrColrMap->at(i + 3)));
                 ++pos;
             }
 
@@ -346,7 +359,7 @@ public:
                 continue;
             }
 
-            if (valAmp <= m_MaxNegAmp)
+            if (valAmp < m_MaxNegAmp)
             {
                 vecOutRGB->push_back(m_MaxNegColr.m_red); // R
                 vecOutRGB->push_back(m_MaxNegColr.m_green); // G
@@ -355,7 +368,7 @@ public:
                 continue;
             }
 
-            if (valAmp >= m_MaxPosAmp)
+            if (valAmp > m_MaxPosAmp)
             {
                 vecOutRGB->push_back(m_MaxPosColr.m_red); // R
                 vecOutRGB->push_back(m_MaxPosColr.m_green); // G
@@ -367,34 +380,34 @@ public:
             if (valAmp < 0)
             {
                 //Color Map's Zero index corresponds to the m_MaxNegColr
-                int indx = std::round(abs((m_MaxNegAmp - valAmp) / m_AmpRate));
+                quint32 indx = std::round( std::abs((m_MaxNegAmp - valAmp)/m_AmpRate ) ); //m_MaxNegAmp and valAmp are negative numbers, so subtracting the two to get the difference
                 indx = indx * 4; //times 4 because each sample is converted to 4 unsigned chars 
 
-                if ((indx + 3) >= m_vecUByteColrMap.size())
-                    indx = m_vecUByteColrMap.size() - 4; /// Sample values that are just a fraction short of the max amplitude,
+                if ((indx + 3) >= m_vecUByteDivergingColrMap.size())
+                    indx = m_vecUByteDivergingColrMap.size() - 4; /// Sample values that are just a fraction short of the max amplitude,
                                     /// will get the color of the maximum amplitude
 
-                vecOutRGB->push_back(m_vecUByteColrMap[indx]); // R
-                vecOutRGB->push_back(m_vecUByteColrMap[indx + 1]); // G
-                vecOutRGB->push_back(m_vecUByteColrMap[indx + 2]);  // B
-                vecOutRGB->push_back(m_vecUByteColrMap[indx + 3]); // Alpha
-                
+                vecOutRGB->push_back(m_vecUByteDivergingColrMap[indx]); // R
+                vecOutRGB->push_back(m_vecUByteDivergingColrMap[indx + 1]); // G
+                vecOutRGB->push_back(m_vecUByteDivergingColrMap[indx + 2]);  // B
+                vecOutRGB->push_back(m_vecUByteDivergingColrMap[indx + 3]); // Alpha
+                                
                 continue;
             }
 
             if (valAmp > 0)
             {
-                quint32 indx = std::round(abs((m_MaxNegAmp + valAmp) / m_AmpRate)); //m_MaxNegAmp is a negative number so adding a positive number to it gives the difference
+                quint32 indx = std::round( std::abs(valAmp/m_AmpRate ) ) + (m_numColrs/2) + 1; //m_MaxNegAmp is a negative number so adding a positive number to it gives the difference
                 indx = indx * 4; //times 4 because each sample is converted to 4 unsigned chars  
 
-                if ((indx + 3) >= (quint32)m_vecUByteColrMap.size())
-                    indx = m_vecUByteColrMap.size() - 4; /// Sample values that are just a fraction short of the max amplitude,
+                if ((indx + 3) >= (quint32)m_vecUByteDivergingColrMap.size())
+                    indx = m_vecUByteDivergingColrMap.size() - 4; /// Sample values that are just a fraction short of the max amplitude,
                                     /// will get the color of the maximum amplitude
                                     
-                vecOutRGB->push_back(m_vecUByteColrMap[indx]); // R
-                vecOutRGB->push_back(m_vecUByteColrMap[indx + 1]); // G
-                vecOutRGB->push_back(m_vecUByteColrMap[indx + 2]);  // B 
-                vecOutRGB->push_back(m_vecUByteColrMap[indx + 3]); // Alpha
+                vecOutRGB->push_back(m_vecUByteDivergingColrMap[indx]); // R
+                vecOutRGB->push_back(m_vecUByteDivergingColrMap[indx + 1]); // G
+                vecOutRGB->push_back(m_vecUByteDivergingColrMap[indx + 2]);  // B 
+                vecOutRGB->push_back(m_vecUByteDivergingColrMap[indx + 3]); // Alpha
 
                 continue;
             }
@@ -452,14 +465,14 @@ public:
             indx = std::round(abs((m_MaxNegAmp - valAmp) / m_AmpRate));
             indx = indx * 4; //times 4 because each color comprises of 4 channels.
 
-            if ((indx + 3) >= m_vecUByteColrMap.size())
+            if ((indx + 3) >= m_vecUByteLinearColrMap.size())
                 indx = indx - 4; /// Sample values that are just a fraction short of the max amplitude,
                                  /// will get the color of the maximum amplitude
 
-            vecOutRGB->push_back(m_vecUByteColrMap[indx]); // R
-            vecOutRGB->push_back(m_vecUByteColrMap[indx + 1]); // G
-            vecOutRGB->push_back(m_vecUByteColrMap[indx + 2]);  // B
-            vecOutRGB->push_back(m_vecUByteColrMap[indx + 3]); // Alpha
+            vecOutRGB->push_back(m_vecUByteLinearColrMap[indx]); // R
+            vecOutRGB->push_back(m_vecUByteLinearColrMap[indx + 1]); // G
+            vecOutRGB->push_back(m_vecUByteLinearColrMap[indx + 2]);  // B
+            vecOutRGB->push_back(m_vecUByteLinearColrMap[indx + 3]); // Alpha
 
         }
 
@@ -492,7 +505,8 @@ public:
 private:
     //Stores rgba channels of the color map
     //std::shared_ptr<QVector<float>> m_ptrVecColrMap = std::make_shared<QVector<float>>();
-    QVector<unsigned char> m_vecUByteColrMap; //GLubyte LUT
+    QVector<unsigned char> m_vecUByteDivergingColrMap; //GLubyte LUT
+    QVector<unsigned char> m_vecUByteLinearColrMap; //GLubyte LUT
     bool m_isColorMapInit; //Only proceed with color lookup, if this is true
     strctColor m_v3NegColrRate; //Rate of change for NEGATIVE amplitudes
     strctColor m_v3PosColrRate; //Rate of change for POSITIVE amplitudes

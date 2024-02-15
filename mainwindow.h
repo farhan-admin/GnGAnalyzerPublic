@@ -61,18 +61,8 @@ private slots:
     void on_actionGL_MIRRORED_REPEAT_triggered();
     void on_actionGL_CLAMP_TO_EDGE_triggered();
     void on_actionGL_CLAMP_TO_BORDER_triggered();
-
     void on_actionGL_NEAREST_triggered();
-
     void on_actionGL_LINEAR_triggered();
-
-    void on_actionGL_NEAREST_MIPMAP_NEAREST_triggered();
-
-    void on_actionGL_LINEAR_MIPMAP_NEAREST_triggered();
-
-    void on_actionGL_NEAREST_MIPMAP_LINEAR_triggered();
-
-    void on_actionGL_LINEAR_MIPMAP_LINEAR_triggered();
 
 private:
     Ui::MainWindow* ui;

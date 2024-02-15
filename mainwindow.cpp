@@ -54,6 +54,19 @@ MainWindow::MainWindow(QWidget* parent) :
 
         SetDispParameters();
 
+        // Create Action groups for Texture Menus
+        QActionGroup* texWrapGroup = new QActionGroup(this);
+        texWrapGroup->addAction(ui->actionGL_REPEAT);
+        texWrapGroup->addAction(ui->actionGL_MIRRORED_REPEAT);
+        texWrapGroup->addAction(ui->actionGL_CLAMP_TO_EDGE);
+        texWrapGroup->addAction(ui->actionGL_CLAMP_TO_BORDER);
+        ui->actionGL_CLAMP_TO_EDGE->setChecked(true);
+
+        QActionGroup* texFilterGroup = new QActionGroup(this);
+        texFilterGroup->addAction(ui->actionGL_LINEAR);
+        texFilterGroup->addAction(ui->actionGL_NEAREST);
+        ui->actionGL_LINEAR->setChecked(true);
+
         //    wd = QStandardPaths::displayName(QStandardPaths::DocumentsLocation); //Setting up a working directory
         //    if(wd.exists())
         //        cErrWarnInfo::EWI(3,"Setting working directry to "+ wd.absolutePath().toStdString());
@@ -164,16 +177,16 @@ std::shared_ptr<cSeisData> MainWindow::GetcSeisDataObj(QString name)
 
 bool MainWindow::GenerateColorMaps()
 {
-    strctColor minColr(150, 150, 150);
-    strctColor zeroColr(75, 75, 75);
-    strctColor maxColr(5, 5, 5);
+    strctColor minColr(0, 0, 240); //Blue
+    strctColor zeroColr(255, 255, 255); //White
+    strctColor maxColr(240, 0, 0); //Red
     quint32 numColrs = 256;
     m_defaultDivergingColorMap->GeneDivergingColorMap(maxColr, minColr, zeroColr, numColrs);
 
     strctColor maxLinearColr(238, 79, 11);
     strctColor minLinearColr(150, 223, 55);
-//    strctColor maxLinearColr(240, 0, 0);
-//    strctColor minLinearColr(0, 0, 240);
+//    strctColor maxLinearColr(240, 0, 0); // Red
+//    strctColor minLinearColr(0, 0, 240); // Blue
     numColrs = 256;
     m_defaultLinearColorMap->GeneLinearColorMap(maxLinearColr, minLinearColr, numColrs);
 
@@ -238,22 +251,22 @@ bool MainWindow::on_RemoveDisplay3D(int m_vDataIndx)
     {
         std::shared_ptr<cSeisData> sDt = m_vData[m_vDataIndx];
 
-        for (auto &gth : sDt->m_ptrChildGather)
+        for (auto gth : sDt->m_ptrVecChildGathers)
         {
-            m_GLWnd->RemoveSeisGath(gth);
-            m_vDispGth.removeAt(m_vDispGth.indexOf(gth));
+               m_GLWnd->RemoveSeisGath(gth);
+               m_vDispGth.removeAt(m_vDispGth.indexOf(gth));
         }
 
-        sDt->m_ptrChildGather.clear();
-        sDt->m_ptrChildGather.squeeze();
+        sDt->m_ptrVecChildGathers.clear();
+        sDt->m_ptrVecChildGathers.squeeze();
 
-        for (auto &hdr : sDt->m_ptrChildHdr)
+        for (auto hdr : sDt->m_ptrVecChildHdrs)
         {
-            m_GLWnd->RemoveSeisHdr(hdr);
+             m_GLWnd->RemoveSeisHdr(hdr);
         }
 
-        sDt->m_ptrChildHdr.clear();
-        sDt->m_ptrChildHdr.squeeze();
+        sDt->m_ptrVecChildHdrs.clear();
+        sDt->m_ptrVecChildHdrs.squeeze();
     }
 
     //QModelIndex indx = this->ui->treeWdgtHdrs->currentIndex();
@@ -678,7 +691,7 @@ void MainWindow::Display3DDownHoleMultiRcvSingleSrc(std::shared_ptr<cSeisData> s
     ///Load Source and Receivers
     std::shared_ptr<cSeisHdr> rcv = std::make_shared<cSeisHdr>();
 
-    sDt->m_ptrChildHdr.push_back(rcv);
+    sDt->m_ptrVecChildHdrs.push_back(rcv);
 
     rcv->m_VcLocXYZ = sDt->GetSrcRcvs(false);
     rcv->m_Color = Qt::blue;
@@ -689,7 +702,7 @@ void MainWindow::Display3DDownHoleMultiRcvSingleSrc(std::shared_ptr<cSeisData> s
 
     std::shared_ptr<cSeisHdr> src = std::make_shared<cSeisHdr>();
 
-    sDt->m_ptrChildHdr.push_back(src);
+    sDt->m_ptrVecChildHdrs.push_back(src);
 
     src->m_VcLocXYZ = sDt->GetSrcRcvs(true);
     src->m_Color = Qt::red;
@@ -702,7 +715,7 @@ void MainWindow::Display3DDownHoleMultiRcvSingleSrc(std::shared_ptr<cSeisData> s
 
     std::shared_ptr <cSeisGather> gth = std::make_shared<cSeisGather>();
 
-    sDt->m_ptrChildGather.push_back(gth); // Gathers added in the sDt->m_ptrChildGather will be displayed
+    sDt->m_ptrVecChildGathers.push_back(gth); // Gathers added in the sDt->m_ptrVecChildGathers will be displayed
 
     gth->m_ptrParent = sDt;
 
@@ -722,24 +735,35 @@ void MainWindow::Display3DDownHoleMultiRcvSingleSrc(std::shared_ptr<cSeisData> s
 
 void MainWindow::Display3DMigrated(std::shared_ptr<cSeisData> sDt)
 {
+    /// In this version, whole seismic data is a single gather. So if it was previously dispalyed it must have been added
+    /// to the m_ptrVecChildGathers and m_isGthrDisplayed bool set to true. 
+    /// WE can check that and avoid displaying same data multiple times and
+    /// creating mutiple pointers to the same data, which causes a crash.
+    if ((sDt->m_ptrVecChildGathers.size() > 0) && (sDt->m_ptrVecChildGathers[0]->m_isGthrDisplayed))
+    {
+        this->statusBar()->showMessage("Data already display");
+        return;
+    }    
 
     ///Load Source and Receivers
 
     std::shared_ptr<cSeisHdr> rcv = std::make_shared<cSeisHdr>();
 
-    sDt->m_ptrChildHdr.push_back(rcv); /// Object to store the Visible Seismic HEADERS.
+    sDt->m_ptrVecChildHdrs.push_back(rcv); /// Object to store the Visible Seismic HEADERS.
     rcv->m_VcLocXYZ = sDt->GetSrcRcvs(true);
     rcv->m_flipElev = sDt->m_flipElev;
     rcv->m_Color = Qt::green;
     if (rcv->m_VcLocXYZ)
         m_GLWnd->AddSeisHdrObj(sDt, rcv);
 
-    std::shared_ptr <cSeisGather> gth = std::make_shared<cSeisGather>();
+    
 
     /// Object to store the Visible Seismic TRACES.
     /// Depending on the trace values passed to the sDt->GetStackedData function, 
     /// this object could be a few traces 0r the whole data
-    sDt->m_ptrChildGather.push_back(gth); 
+    /// HOWEVER IN CURRENT VERSION ALL TRACES ARE CONSIDER. SO ONLY ONE GATHER FORMS PER DATA SET
+    std::shared_ptr <cSeisGather> gth = std::make_shared<cSeisGather>();
+    sDt->m_ptrVecChildGathers.push_back(gth); 
 
     gth->m_ptrParent = sDt;
 
@@ -829,59 +853,41 @@ void MainWindow::on_actionGL_REPEAT_triggered()
 {
     m_GLWnd->setTextureWrapping(GL_REPEAT);
     m_GLWnd->update();
+    this->statusBar()->showMessage("Please 'Remove Display' and then 'Display'.");
 }
 
 void MainWindow::on_actionGL_MIRRORED_REPEAT_triggered()
 {
     m_GLWnd->setTextureWrapping(GL_MIRRORED_REPEAT);
     m_GLWnd->update();
+    this->statusBar()->showMessage("Please 'Remove Display' and then 'Display'.");
 }
 
 void MainWindow::on_actionGL_CLAMP_TO_EDGE_triggered()
 {
     m_GLWnd->setTextureWrapping(GL_CLAMP_TO_EDGE);
     m_GLWnd->update();
+    this->statusBar()->showMessage("Please 'Remove Display' and then 'Display'.");
 }
 
 void MainWindow::on_actionGL_CLAMP_TO_BORDER_triggered()
 {
     m_GLWnd->setTextureWrapping(GL_CLAMP_TO_BORDER);
     m_GLWnd->update();
+    this->statusBar()->showMessage("Please 'Remove Display' and then 'Display'.");
 }
 
 void MainWindow::on_actionGL_NEAREST_triggered()
 {
     m_GLWnd->setTextureFiltering(GL_NEAREST);
     m_GLWnd->update();
+    this->statusBar()->showMessage("Please 'Remove Display' and then 'Display'.");
 }
 
 void MainWindow::on_actionGL_LINEAR_triggered()
 {
     m_GLWnd->setTextureFiltering(GL_LINEAR);
     m_GLWnd->update();
-}
-
-void MainWindow::on_actionGL_NEAREST_MIPMAP_NEAREST_triggered()
-{
-    m_GLWnd->setTextureFiltering(GL_NEAREST_MIPMAP_NEAREST);
-    m_GLWnd->update();
-}
-
-void MainWindow::on_actionGL_LINEAR_MIPMAP_NEAREST_triggered()
-{
-    m_GLWnd->setTextureFiltering(GL_LINEAR_MIPMAP_NEAREST);
-    m_GLWnd->update();
-}
-
-void MainWindow::on_actionGL_NEAREST_MIPMAP_LINEAR_triggered()
-{
-    m_GLWnd->setTextureFiltering(GL_NEAREST_MIPMAP_LINEAR);
-    m_GLWnd->update();
-}
-
-void MainWindow::on_actionGL_LINEAR_MIPMAP_LINEAR_triggered()
-{
-    m_GLWnd->setTextureFiltering(GL_LINEAR_MIPMAP_LINEAR);
-    m_GLWnd->update();
+    this->statusBar()->showMessage("Please 'Remove Display' and then 'Display'.");
 }
 

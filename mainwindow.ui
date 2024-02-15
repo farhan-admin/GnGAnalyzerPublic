@@ -70,7 +70,7 @@
      <x>0</x>
      <y>0</y>
      <width>1119</width>
-     <height>16</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="font">
@@ -115,10 +115,6 @@
      </property>
      <addaction name="actionGL_NEAREST"/>
      <addaction name="actionGL_LINEAR"/>
-     <addaction name="actionGL_NEAREST_MIPMAP_NEAREST"/>
-     <addaction name="actionGL_LINEAR_MIPMAP_NEAREST"/>
-     <addaction name="actionGL_NEAREST_MIPMAP_LINEAR"/>
-     <addaction name="actionGL_LINEAR_MIPMAP_LINEAR"/>
     </widget>
     <addaction name="menuTexture_Wrapping"/>
     <addaction name="menuTexture_Filtering"/>
@@ -287,6 +283,9 @@
    </property>
   </action>
   <action name="actionGL_REPEAT">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>GL_REPEAT</string>
    </property>
@@ -295,6 +294,9 @@
    </property>
   </action>
   <action name="actionGL_MIRRORED_REPEAT">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>GL_MIRRORED_REPEAT</string>
    </property>
@@ -303,6 +305,9 @@
    </property>
   </action>
   <action name="actionGL_CLAMP_TO_EDGE">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>GL_CLAMP_TO_EDGE</string>
    </property>
@@ -312,7 +317,7 @@
   </action>
   <action name="actionGL_CLAMP_TO_BORDER">
    <property name="checkable">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>GL_CLAMP_TO_BORDER</string>
@@ -332,6 +337,9 @@
    </property>
   </action>
   <action name="actionGL_NEAREST">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>GL_NEAREST</string>
    </property>
@@ -340,43 +348,14 @@
    </property>
   </action>
   <action name="actionGL_LINEAR">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>GL_LINEAR</string>
    </property>
    <property name="toolTip">
     <string>Returns the weighted average of the 4 pixels surrounding the given coordinates</string>
-   </property>
-  </action>
-  <action name="actionGL_NEAREST_MIPMAP_NEAREST">
-   <property name="text">
-    <string>GL_NEAREST_MIPMAP_NEAREST</string>
-   </property>
-   <property name="toolTip">
-    <string>Sample from mipmaps instead</string>
-   </property>
-  </action>
-  <action name="actionGL_LINEAR_MIPMAP_NEAREST">
-   <property name="text">
-    <string>GL_LINEAR_MIPMAP_NEAREST</string>
-   </property>
-   <property name="toolTip">
-    <string>Sample from mipmaps instead</string>
-   </property>
-  </action>
-  <action name="actionGL_NEAREST_MIPMAP_LINEAR">
-   <property name="text">
-    <string>GL_NEAREST_MIPMAP_LINEAR</string>
-   </property>
-   <property name="toolTip">
-    <string>Sample from mipmaps instead</string>
-   </property>
-  </action>
-  <action name="actionGL_LINEAR_MIPMAP_LINEAR">
-   <property name="text">
-    <string>GL_LINEAR_MIPMAP_LINEAR</string>
-   </property>
-   <property name="toolTip">
-    <string>Sample from mipmaps instead</string>
    </property>
   </action>
  </widget>

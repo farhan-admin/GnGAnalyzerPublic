@@ -18,3 +18,4 @@ packages*
 SampleCode.cpp
 /.vs/GnGAnalyzer_v01
 /ClassDiagram.cd
+/.qtc_clangd

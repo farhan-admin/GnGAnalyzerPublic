@@ -30,7 +30,7 @@
     }
 
     //File IO errors
-    void cErrWarnInfo::EWI(short msgtype, uint err)
+    void cErrWarnInfo::EWI(short msgtype, uint err) // EWI = Error Warning Information
     {
         EWI(msgtype, FileErrorDes(err));
     }

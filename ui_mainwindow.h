@@ -44,10 +44,6 @@ public:
     QAction *actionDisplayStackedSurface;
     QAction *actionGL_NEAREST;
     QAction *actionGL_LINEAR;
-    QAction *actionGL_NEAREST_MIPMAP_NEAREST;
-    QAction *actionGL_LINEAR_MIPMAP_NEAREST;
-    QAction *actionGL_NEAREST_MIPMAP_LINEAR;
-    QAction *actionGL_LINEAR_MIPMAP_LINEAR;
     QWidget *centralWidget;
     QMdiArea *mdiArea;
     QMenuBar *menuBar;
@@ -94,29 +90,26 @@ public:
         actionLicense->setObjectName(QString::fromUtf8("actionLicense"));
         actionGL_REPEAT = new QAction(MainWindow);
         actionGL_REPEAT->setObjectName(QString::fromUtf8("actionGL_REPEAT"));
+        actionGL_REPEAT->setCheckable(true);
         actionGL_MIRRORED_REPEAT = new QAction(MainWindow);
         actionGL_MIRRORED_REPEAT->setObjectName(QString::fromUtf8("actionGL_MIRRORED_REPEAT"));
+        actionGL_MIRRORED_REPEAT->setCheckable(true);
         actionGL_CLAMP_TO_EDGE = new QAction(MainWindow);
         actionGL_CLAMP_TO_EDGE->setObjectName(QString::fromUtf8("actionGL_CLAMP_TO_EDGE"));
+        actionGL_CLAMP_TO_EDGE->setCheckable(true);
         actionGL_CLAMP_TO_BORDER = new QAction(MainWindow);
         actionGL_CLAMP_TO_BORDER->setObjectName(QString::fromUtf8("actionGL_CLAMP_TO_BORDER"));
-        actionGL_CLAMP_TO_BORDER->setCheckable(false);
+        actionGL_CLAMP_TO_BORDER->setCheckable(true);
         actionDisplayShotGatherDonwhole = new QAction(MainWindow);
         actionDisplayShotGatherDonwhole->setObjectName(QString::fromUtf8("actionDisplayShotGatherDonwhole"));
         actionDisplayStackedSurface = new QAction(MainWindow);
         actionDisplayStackedSurface->setObjectName(QString::fromUtf8("actionDisplayStackedSurface"));
         actionGL_NEAREST = new QAction(MainWindow);
         actionGL_NEAREST->setObjectName(QString::fromUtf8("actionGL_NEAREST"));
+        actionGL_NEAREST->setCheckable(true);
         actionGL_LINEAR = new QAction(MainWindow);
         actionGL_LINEAR->setObjectName(QString::fromUtf8("actionGL_LINEAR"));
-        actionGL_NEAREST_MIPMAP_NEAREST = new QAction(MainWindow);
-        actionGL_NEAREST_MIPMAP_NEAREST->setObjectName(QString::fromUtf8("actionGL_NEAREST_MIPMAP_NEAREST"));
-        actionGL_LINEAR_MIPMAP_NEAREST = new QAction(MainWindow);
-        actionGL_LINEAR_MIPMAP_NEAREST->setObjectName(QString::fromUtf8("actionGL_LINEAR_MIPMAP_NEAREST"));
-        actionGL_NEAREST_MIPMAP_LINEAR = new QAction(MainWindow);
-        actionGL_NEAREST_MIPMAP_LINEAR->setObjectName(QString::fromUtf8("actionGL_NEAREST_MIPMAP_LINEAR"));
-        actionGL_LINEAR_MIPMAP_LINEAR = new QAction(MainWindow);
-        actionGL_LINEAR_MIPMAP_LINEAR->setObjectName(QString::fromUtf8("actionGL_LINEAR_MIPMAP_LINEAR"));
+        actionGL_LINEAR->setCheckable(true);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         mdiArea = new QMdiArea(centralWidget);
@@ -134,7 +127,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1119, 16));
+        menuBar->setGeometry(QRect(0, 0, 1119, 21));
         QFont font;
         font.setFamily(QString::fromUtf8("MS Shell Dlg 2"));
         menuBar->setFont(font);
@@ -229,10 +222,6 @@ public:
         menuTexture_Wrapping->addAction(actionGL_CLAMP_TO_BORDER);
         menuTexture_Filtering->addAction(actionGL_NEAREST);
         menuTexture_Filtering->addAction(actionGL_LINEAR);
-        menuTexture_Filtering->addAction(actionGL_NEAREST_MIPMAP_NEAREST);
-        menuTexture_Filtering->addAction(actionGL_LINEAR_MIPMAP_NEAREST);
-        menuTexture_Filtering->addAction(actionGL_NEAREST_MIPMAP_LINEAR);
-        menuTexture_Filtering->addAction(actionGL_LINEAR_MIPMAP_LINEAR);
 
         retranslateUi(MainWindow);
 
@@ -276,22 +265,6 @@ public:
         actionGL_LINEAR->setText(QCoreApplication::translate("MainWindow", "GL_LINEAR", nullptr));
 #if QT_CONFIG(tooltip)
         actionGL_LINEAR->setToolTip(QCoreApplication::translate("MainWindow", "Returns the weighted average of the 4 pixels surrounding the given coordinates", nullptr));
-#endif // QT_CONFIG(tooltip)
-        actionGL_NEAREST_MIPMAP_NEAREST->setText(QCoreApplication::translate("MainWindow", "GL_NEAREST_MIPMAP_NEAREST", nullptr));
-#if QT_CONFIG(tooltip)
-        actionGL_NEAREST_MIPMAP_NEAREST->setToolTip(QCoreApplication::translate("MainWindow", "Sample from mipmaps instead", nullptr));
-#endif // QT_CONFIG(tooltip)
-        actionGL_LINEAR_MIPMAP_NEAREST->setText(QCoreApplication::translate("MainWindow", "GL_LINEAR_MIPMAP_NEAREST", nullptr));
-#if QT_CONFIG(tooltip)
-        actionGL_LINEAR_MIPMAP_NEAREST->setToolTip(QCoreApplication::translate("MainWindow", "Sample from mipmaps instead", nullptr));
-#endif // QT_CONFIG(tooltip)
-        actionGL_NEAREST_MIPMAP_LINEAR->setText(QCoreApplication::translate("MainWindow", "GL_NEAREST_MIPMAP_LINEAR", nullptr));
-#if QT_CONFIG(tooltip)
-        actionGL_NEAREST_MIPMAP_LINEAR->setToolTip(QCoreApplication::translate("MainWindow", "Sample from mipmaps instead", nullptr));
-#endif // QT_CONFIG(tooltip)
-        actionGL_LINEAR_MIPMAP_LINEAR->setText(QCoreApplication::translate("MainWindow", "GL_LINEAR_MIPMAP_LINEAR", nullptr));
-#if QT_CONFIG(tooltip)
-        actionGL_LINEAR_MIPMAP_LINEAR->setToolTip(QCoreApplication::translate("MainWindow", "Sample from mipmaps instead", nullptr));
 #endif // QT_CONFIG(tooltip)
         menuOpen->setTitle(QCoreApplication::translate("MainWindow", "Load Data", nullptr));
         menuAbout->setTitle(QCoreApplication::translate("MainWindow", "About", nullptr));

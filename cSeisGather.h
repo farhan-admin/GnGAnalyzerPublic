@@ -19,7 +19,7 @@ class cSeisData; //Forward declaration
 class cSeisGather
 {
 public:
-    cSeisGather() : m_glTextureID(0), m_glTextureNum(0), m_glColoMapTextureID(0), m_VAO(0), m_isGthrDisplayed(false), m_isSrcGather(0), m_isTrckVert(true)
+    cSeisGather() : m_glTextureID(0), m_glTextureNum(-1), m_glColoMapTextureID(0), m_VAO(0), m_isGthrDisplayed(false), m_isSrcGather(0), m_isTrckVert(true)
     {}
     //std::shared_ptr< QVector<float> >  m_2DSamples = std::make_shared<QVector<float>>(); //Array with samples of all the traces stored sequentially
     std::shared_ptr< QVector<unsigned char> >  m_SamplesRGB = std::make_shared<QVector<unsigned char>>(); //Array with samples of all the traces stored sequentially
@@ -34,18 +34,18 @@ public:
     /// It stores the opengl ID for the loaded 2D texture array.
     /// m_glTextureID = 0 indicates invalid value.
     /// </summary>
-    uint m_glTextureID;
+    uint m_glTextureID = 0;
 
     /// <summary>
     /// This stores the Texture number. It is used in the glActiveTexture functions to 
     /// activate the correct texture on while Loading texture data and rendering the texture.
     /// </summary>
-    quint16 m_glTextureNum;
+    int m_glTextureNum = -1;
 
     /// <summary>
     /// The iterator is used when deleting the pointer, in the function cGLWindow::RemoveSeisGath(std::shared_ptr<cSeisGather> gth)
     /// </summary>
-    QList<std::shared_ptr<cSeisGather>>::iterator m_posItr;
+    std::shared_ptr<cSeisGather> m_posItr;
 
     /// <summary>
     /// This parameter is updated in the cGLWindow::LoadColorMap function.

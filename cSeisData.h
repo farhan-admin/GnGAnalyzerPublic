@@ -49,10 +49,10 @@
         
         /// Pointers to the sub gathers - This will be useful in future for tracking multiple gathers
         /// within each data. For example tracking slices within 3D cubes OR CSG or CRG for downhole datasets
-        QVector< std::shared_ptr<cSeisGather> > m_ptrChildGather;
+        QVector< std::shared_ptr<cSeisGather> > m_ptrVecChildGathers;
 
         /// Pointers to all the header objects
-        QVector< std::shared_ptr<cSeisHdr> > m_ptrChildHdr;
+        QVector< std::shared_ptr<cSeisHdr> > m_ptrVecChildHdrs;
 
         std::shared_ptr<cColorMap> m_ColorMap;
         

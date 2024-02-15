@@ -422,14 +422,13 @@ GLenum cGLWindow::glCheckError_(const char* file, int line)
     {
         if (!gth->m_isGthrDisplayed)
         {
-            m_LstSeisXZYGths.push_back(gth);
             gth->m_isGthrDisplayed = true;
 
-            /// storing the current iterator position. This will be used to the remove the entry in
-            /// the cGLWindow::RemoveSeisGath(std::shared_ptr<cSeisGather> gth)
-            gth->m_posItr = m_LstSeisXZYGths.end() - 1;
-
-            gth->m_glTextureNum = GetAvailTextureNum(); // Assigning the Unique texture number
+            if (gth->m_glTextureNum == -1) { // Assigning new unique texture number, if none already assigned
+                m_LstSeisXZYGths.push_back(gth);
+                gth->m_glTextureNum = m_LstSeisXZYGths.count() - 1;
+            }
+            
             if (gth->m_glTextureNum == -1)
                 return false;
 
@@ -464,7 +463,8 @@ GLenum cGLWindow::glCheckError_(const char* file, int line)
 
         for (auto gth : m_LstSeisXZYGths)
         {
-            inUseNums.push_back(gth->m_glTextureNum);
+            if(gth->m_glTextureNum != -1)
+                inUseNums.push_back(gth->m_glTextureNum);
         }
 
 
@@ -479,7 +479,7 @@ GLenum cGLWindow::glCheckError_(const char* file, int line)
 
             if (i > ( MAX_TEXTURE_OBJECTS - 2 ))
             {
-                cErrWarnInfo::EWI(ewiERROR, "Maximum number of allowed Seismic gather objects reached.");
+                cErrWarnInfo::EWI(ewiERROR, "Maximum number of allowed Seismic gather objects reached. Cannot display more objects.");
                 return -1;
             }
         }
@@ -492,7 +492,9 @@ GLenum cGLWindow::glCheckError_(const char* file, int line)
     bool cGLWindow::RemoveSeisGath(std::shared_ptr<cSeisGather> gth)
     {
         glDeleteTextures(1, &gth->m_glTextureID);
-        m_LstSeisXZYGths.erase(gth->m_posItr);
+        m_LstSeisXZYGths.removeAt(gth->m_glTextureNum);
+       // m_LstSeisXZYGths.erase(gth->m_posItr); //Commented to avoid crash. Need a to find a better way to track the displayed gathers
+
         gth->m_isGthrDisplayed = false;
 
         update();
@@ -814,12 +816,12 @@ GLenum cGLWindow::glCheckError_(const char* file, int line)
     
     void cGLWindow::setTextureWrapping(int val)
     {
-        m_TextureWrapping = val;
+        m_glTextureWrapping = val;
     }
 
     void cGLWindow::setTextureFiltering(int val)
     {
-        m_TextureFiltering = val;
+        m_glTextureFiltering = val;
     }
 
     /// <summary>
@@ -831,16 +833,16 @@ GLenum cGLWindow::glCheckError_(const char* file, int line)
     bool cGLWindow::Load2DSeisTrcTexture(std::shared_ptr<cSeisGather> gth)
     {
         glGenTextures(1, &gth->m_glTextureID);
-        glActiveTexture(GL_TEXTURE0 + gth->m_glTextureNum);// m_uTexSamLocGthProg);
+        glActiveTexture(GL_TEXTURE0 + gth->m_glTextureNum);
         glBindTexture(GL_TEXTURE_2D_ARRAY, gth->m_glTextureID);
 
         // set the texture wrapping parameters
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, m_TextureWrapping);
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, m_TextureWrapping);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, m_glTextureWrapping);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, m_glTextureWrapping);
 
         // set texture filtering parameters
         glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, m_TextureFiltering);//GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, m_glTextureFiltering);
 
         const uint nSamp = gth->m_ptrParent->m_NumSamples; // Seismic samples are placed from start to end of the trace
         const uint HEIGHT = 1; 
@@ -850,6 +852,10 @@ GLenum cGLWindow::glCheckError_(const char* file, int line)
         //GLR32F does not have alpha channel
         glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, nSamp, HEIGHT, nTraces);
         glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, OFFSET, OFFSET, OFFSET, nSamp, HEIGHT, nTraces, GL_RGBA, GL_UNSIGNED_BYTE, gth->m_SamplesRGB->data());
+
+        //For creating visualizations for the paper
+        //glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, OFFSET, 0.5, 0.5, nSamp, HEIGHT, nTraces, GL_RGBA, GL_UNSIGNED_BYTE, gth->m_SamplesRGB->data());
+        
         glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 
         return true;
