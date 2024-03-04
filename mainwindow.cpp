@@ -183,10 +183,10 @@ bool MainWindow::GenerateColorMaps()
     quint32 numColrs = 256;
     m_defaultDivergingColorMap->GeneDivergingColorMap(maxColr, minColr, zeroColr, numColrs);
 
-    strctColor maxLinearColr(238, 79, 11);
-    strctColor minLinearColr(150, 223, 55);
-//    strctColor maxLinearColr(240, 0, 0); // Red
-//    strctColor minLinearColr(0, 0, 240); // Blue
+    //strctColor maxLinearColr(238, 79, 11);
+    //strctColor minLinearColr(150, 223, 55);
+    strctColor maxLinearColr(240, 0, 0); // Red
+    strctColor minLinearColr(0, 0, 240); // Blue
     numColrs = 256;
     m_defaultLinearColorMap->GeneLinearColorMap(maxLinearColr, minLinearColr, numColrs);
 
