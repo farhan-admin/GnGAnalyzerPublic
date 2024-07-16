@@ -347,7 +347,7 @@ public:
 
         for (auto valAmp : seisSamp)
         {
-            //valAmp /= NormFact;
+            valAmp *= NormFact;
 
             //For Zero Amplitudes. Hint: There are a lot of Zeros in seismic data
             if (valAmp == 0.0)
@@ -441,7 +441,7 @@ public:
         {
             valAmp = seisSamp[s];
 
-            //valAmp /= NormFact;
+            valAmp *= NormFact;
 
             if (valAmp <= m_MaxNegAmp)
             {
