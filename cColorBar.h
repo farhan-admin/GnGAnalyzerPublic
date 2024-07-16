@@ -19,7 +19,6 @@ protected:
         QPainter painter(this);
         painter.setOpacity(0.9);
         painter.setRenderHint(QPainter::HighQualityAntialiasing);
-
         painter.fillRect(rect(), *m_ptrGradient);
     }
 

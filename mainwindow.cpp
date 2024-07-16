@@ -183,12 +183,17 @@ bool MainWindow::GenerateColorMaps()
     quint32 numColrs = 256;
     m_defaultDivergingColorMap->GeneDivergingColorMap(maxColr, minColr, zeroColr, numColrs);
 
-    //strctColor maxLinearColr(238, 79, 11);
-    //strctColor minLinearColr(150, 223, 55);
-    strctColor maxLinearColr(240, 0, 0); // Red
-    strctColor minLinearColr(0, 0, 240); // Blue
+    //Initializing Gray Scale Color Map
+    strctColor maxLinearColr(0, 0, 0); // Black
+    strctColor minLinearColr(255, 255, 255); // White
     numColrs = 256;
-    m_defaultLinearColorMap->GeneLinearColorMap(maxLinearColr, minLinearColr, numColrs);
+    m_grayScaleLinearColorMap->GeneLinearColorMap(maxLinearColr, minLinearColr, numColrs);
+
+    //Initializing Red Blue Color Map
+    strctColor maxLinearColr2(240, 0, 0); // Red
+    strctColor minLinearColr2(0, 0, 240); // Blue
+    numColrs = 256;
+    m_defaultLinearColorMap->GeneLinearColorMap(maxLinearColr2, minLinearColr2, numColrs);
 
     return false;
 }
@@ -559,6 +564,11 @@ QTreeWidgetItem* MainWindow::AddToTreeWidget(std::shared_ptr<cSeisData> pDt, QSt
     itmColorBar->setForeground(CHILD_INFO_LABL, QBrush(Qt::darkGray));
     itmAttribParam->addChild(itmColorBar);
 
+    QPushButton* pushBtnSelColorMap = new QPushButton();
+    pushBtnSelColorMap->setText("Switch");
+    this->ui->treeWdgtHdrs->setItemWidget(itmColorBar, APPLY_BTN_CNTRL_COL, pushBtnSelColorMap);
+    QObject::connect(pushBtnSelColorMap, &QPushButton::clicked, this, &MainWindow::on_SwitchColorBar);
+
     cColorBar* colorBar = new cColorBar(pDt->m_ColorMap->GetColorBar());
     this->ui->treeWdgtHdrs->setItemWidget(itmColorBar, CHILD_INFO_AND_CNTRL_COL, colorBar);
     /// <summary>
@@ -593,6 +603,34 @@ bool MainWindow::on_BtnApplyNorm()
 
     on_RemoveDisplay3D(m_vDataIndx); //First delete the old data from the GLWindow
 
+    on_Display3D(m_vDataIndx);
+
+    return false;
+}
+
+bool MainWindow::on_SwitchColorBar()
+{
+    //Selecting the Parent node of the currently clicked Apply button
+    QTreeWidgetItem* curItem = this->ui->treeWdgtHdrs->currentItem();
+    int m_vDataIndx = GetTopNodeIndex(curItem);
+
+    std::shared_ptr<cSeisData> pDt = m_vData[m_vDataIndx];
+
+    // Switching to a different color map, each time user clicks the "Switch" 
+    
+    if (pDt->m_ColorMap == m_defaultDivergingColorMap)
+        pDt->m_ColorMap = m_defaultLinearColorMap;
+
+    else if (pDt->m_ColorMap == m_defaultLinearColorMap)
+        pDt->m_ColorMap = m_grayScaleLinearColorMap;
+
+    else if (pDt->m_ColorMap == m_grayScaleLinearColorMap)
+        pDt->m_ColorMap = m_defaultDivergingColorMap;
+
+    cColorBar* colorBar = new cColorBar(pDt->m_ColorMap->GetColorBar());
+    this->ui->treeWdgtHdrs->setItemWidget(curItem, CHILD_INFO_AND_CNTRL_COL, colorBar);
+
+    on_RemoveDisplay3D(m_vDataIndx); //First delete the old data from the GLWindow
     on_Display3D(m_vDataIndx);
 
     return false;

@@ -46,6 +46,7 @@ private slots:
     bool SetDispParameters();
     bool on_DisplayGathers();
     bool on_BtnApplyNorm();
+    bool on_SwitchColorBar();
     bool on_BtnApplyFlipElev();
     bool on_removeSortGather();
     std::shared_ptr<cSeisData> GetcSeisDataObj(QString name);
@@ -70,6 +71,7 @@ private:
 
     std::shared_ptr<cColorMap> m_defaultDivergingColorMap = std::make_shared<cColorMap>();
     std::shared_ptr<cColorMap> m_defaultLinearColorMap = std::make_shared<cColorMap>();
+    std::shared_ptr<cColorMap> m_grayScaleLinearColorMap = std::make_shared<cColorMap>();
     bool LoadDownHoleMultiRcvSingleSrc(std::shared_ptr<cSegYReadWrite> pSgyRedWrt, std::shared_ptr<cSeisData> pdt, QTreeWidgetItem* itmFileName, QTreeWidgetItem* srcItem, QTreeWidgetItem* rcvItem);
     bool LoadMigrated(std::shared_ptr<cSegYReadWrite> pSgyRedWrt, std::shared_ptr<cSeisData> pdt, QTreeWidgetItem* itmFileName, QTreeWidgetItem* rcvItem);
     QTreeWidgetItem* AddToTreeWidget(std::shared_ptr<cSeisData> pDt, QString& dataDesc, quint32 dataIndx);

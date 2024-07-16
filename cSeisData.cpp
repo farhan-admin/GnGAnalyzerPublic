@@ -469,8 +469,8 @@
             else
                 NormFact = *result.second;
 
-            float NormMin = *result.first / NormFact;
-            float NormMax = *result.second / NormFact;
+            float NormMin = *result.first;// / NormFact;
+            float NormMax = *result.second;// / NormFact;
 
             seisGth->m_ptrParent->m_ColorMap->UpdateAmpRange(NormMin, NormMax);
 
